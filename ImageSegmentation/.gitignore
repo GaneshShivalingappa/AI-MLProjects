@@ -1,6 +1,6 @@
 # Ignore the data and images folders
 data/
-images/
+/images/
 
 # Ignore the myenv folder (virtual environment)
 myenv/

@@ -43,3 +43,20 @@ def read_and_decode(example):
     label = tf.reshape(label_raw, [256, 256, 1])
 
     return image, label
+
+# get datasets read and decoded, and into a state usable by TensorFlow
+tf_autotune = tf.data.experimental.AUTOTUNE
+train = parsed_training_dataset.map(
+    read_and_decode, num_parallel_calls=tf_autotune)
+val = parsed_val_dataset.map(read_and_decode)
+train.element_spec
+
+# setup the buffer size and batch size for data reading and training
+BUFFER_SIZE = 10
+BATCH_SIZE = 1
+
+# setup the train and test data by shuffling, prefetching, etc
+train_dataset = train.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
+train_dataset = train_dataset.prefetch(buffer_size=tf_autotune)
+test_dataset  = val.batch(BATCH_SIZE)
+train_dataset

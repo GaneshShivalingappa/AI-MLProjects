@@ -59,4 +59,16 @@ BATCH_SIZE = 1
 train_dataset = train.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
 train_dataset = train_dataset.prefetch(buffer_size=tf_autotune)
 test_dataset  = val.batch(BATCH_SIZE)
-train_dataset
+
+# helper function to display an image, it's label and the prediction
+def display(display_list):
+    plt.figure(figsize=(10, 10))
+    title = ['Input Image', 'Label', 'Predicted Label']
+
+    for i in range(len(display_list)):
+        display_resized = tf.reshape(display_list[i], [256, 256])
+        plt.subplot(1, len(display_list), i+1)
+        plt.title(title[i])
+        plt.imshow(display_resized)
+        plt.axis('off')
+    plt.show()

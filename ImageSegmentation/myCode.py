@@ -72,3 +72,13 @@ def display(display_list):
         plt.imshow(display_resized)
         plt.axis('off')
     plt.show()
+
+# display an image and label from the training set
+for image, label in train.take(2):
+    sample_image, sample_label = image, label
+    display([sample_image, sample_label])
+
+# display an image and label from the test set
+for image, label in val.take(2):
+    sample_image, sample_label = image, label
+    display([sample_image, sample_label])

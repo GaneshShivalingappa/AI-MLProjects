@@ -82,3 +82,13 @@ for image, label in train.take(2):
 for image, label in val.take(2):
     sample_image, sample_label = image, label
     display([sample_image, sample_label])
+
+tf.keras.backend.clear_session()
+
+# set up the model architecture
+model = tf.keras.models.Sequential([
+    Flatten(input_shape=[256, 256, 1]),
+    Dense(64, activation='relu'),
+    Dense(256*256*2, activation='softmax'),
+    Reshape((256, 256, 2))
+])

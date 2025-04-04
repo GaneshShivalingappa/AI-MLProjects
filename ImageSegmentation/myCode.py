@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 plt.rcParams['image.cmap'] = 'Greys_r'
 
 # loading the training and test sets from TFRecords
-raw_training_dataset = tf.data.TFRecordDataset('data/train_images.tfrecords')
-raw_val_dataset      = tf.data.TFRecordDataset('data/val_images.tfrecords')
+raw_training_dataset = tf.data.TFRecordDataset('ImageSegmentation/data/train_images.tfrecords')
+raw_val_dataset      = tf.data.TFRecordDataset('ImageSegmentation/data/val_images.tfrecords')
 
 # dictionary describing the fields stored in TFRecord, and used to extract the date from the TFRecords
 image_feature_description = {
@@ -46,10 +46,9 @@ def read_and_decode(example):
 
 # get datasets read and decoded, and into a state usable by TensorFlow
 tf_autotune = tf.data.experimental.AUTOTUNE
-train = parsed_training_dataset.map(
-    read_and_decode, num_parallel_calls=tf_autotune)
+train = parsed_training_dataset.map(read_and_decode, num_parallel_calls=tf_autotune)
 val = parsed_val_dataset.map(read_and_decode)
-train.element_spec
+#train.element_spec
 
 # setup the buffer size and batch size for data reading and training
 BUFFER_SIZE = 10
@@ -92,3 +91,12 @@ model = tf.keras.models.Sequential([
     Dense(256*256*2, activation='softmax'),
     Reshape((256, 256, 2))
 ])
+
+# specify how to train the model with algorithm, the loss function and metrics
+model.compile(
+    optimizer='adam',
+    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    metrics=['accuracy'])
+
+# print out the summary of the model
+model.summary()

@@ -100,3 +100,12 @@ model.compile(
 
 # print out the summary of the model
 model.summary()
+
+# plot the model including the sizes of the model
+tf.keras.utils.plot_model(model, show_shapes=True)
+
+# function to take a prediction from the model and output an image for display
+def create_mask(pred_mask):
+    pred_mask = tf.argmax(pred_mask, axis=-1)
+    pred_mask = pred_mask[..., tf.newaxis]
+    return pred_mask[0]

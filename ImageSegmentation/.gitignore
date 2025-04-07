@@ -14,9 +14,11 @@ myenv/
 # Ignore all .ini files (including desktop.ini)
 *.ini
 
+*.ipynb
+
 # Ignore the desktop.ini file
 desktop.ini
 
 # Keep .ipynb and .py files
-!*.ipynb
+#!*.ipynb
 !*.py

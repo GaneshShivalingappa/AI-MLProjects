@@ -109,3 +109,16 @@ def create_mask(pred_mask):
     pred_mask = tf.argmax(pred_mask, axis=-1)
     pred_mask = pred_mask[..., tf.newaxis]
     return pred_mask[0]
+
+# helper function to show the image, the label and the prediction
+def show_predictions(dataset=None, num=1):
+    if dataset:
+        for image, label in dataset.take(num):
+            pred_mask = model.predict(image)
+            display([image[0], label[0], create_mask(pred_mask)])
+    else:
+        prediction = create_mask(model.predict(sample_image[tf.newaxis, ...]))
+        display([sample_image, sample_label, prediction])
+
+# show a predection, as an example
+show_predictions(test_dataset)

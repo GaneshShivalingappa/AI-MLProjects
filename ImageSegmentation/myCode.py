@@ -122,3 +122,9 @@ def show_predictions(dataset=None, num=1):
 
 # show a predection, as an example
 show_predictions(test_dataset)
+
+# define a callback that shows image predictions on the test set
+class DisplayCallback(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        show_predictions()
+        print ('\nSample Prediction after epoch {}\n'.format(epoch+1))

@@ -128,3 +128,8 @@ class DisplayCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         show_predictions()
         print ('\nSample Prediction after epoch {}\n'.format(epoch+1))
+
+
+# setup a tensorboard callback
+logdir = os.path.join("logs", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+tensorboard_callback = tf.keras.callbacks.TensorBoard(logdir, histogram_freq=1)

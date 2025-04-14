@@ -144,3 +144,21 @@ model_history = model.fit(train_dataset, epochs=EPOCHS,
                           validation_steps=VALIDATION_STEPS,
                           validation_data=test_dataset,
                           callbacks=[DisplayCallback(), tensorboard_callback])
+
+# output model statistics
+loss = model_history.history['loss']
+val_loss = model_history.history['val_loss']
+accuracy = model_history.history['accuracy']
+val_accuracy = model_history.history['val_accuracy']
+
+epochs = range(EPOCHS)
+
+plt.figure()
+plt.plot(epochs, loss, 'r', label='Training loss')
+plt.plot(epochs, val_loss, 'bo', label='Validation loss')
+plt.title('Training and Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss Value')
+plt.ylim([0, 1])
+plt.legend()
+plt.show()

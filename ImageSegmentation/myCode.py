@@ -1,6 +1,5 @@
 import datetime
 import os
-
 import tensorflow as tf
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import (Flatten, Dense, Reshape, Conv2D, MaxPool2D, Conv2DTranspose)
@@ -35,13 +34,10 @@ def read_and_decode(example):
     image_raw = tf.io.decode_raw(example['image_raw'], tf.int64)
     image_raw.set_shape([65536])
     image = tf.reshape(image_raw, [256, 256, 1])
-
     image = tf.cast(image, tf.float32) * (1. / 1024)
-
     label_raw = tf.io.decode_raw(example['label_raw'], tf.uint8)
     label_raw.set_shape([65536])
     label = tf.reshape(label_raw, [256, 256, 1])
-
     return image, label
 
 # get datasets read and decoded, and into a state usable by TensorFlow
@@ -150,7 +146,6 @@ loss = model_history.history['loss']
 val_loss = model_history.history['val_loss']
 accuracy = model_history.history['accuracy']
 val_accuracy = model_history.history['val_accuracy']
-
 epochs = range(EPOCHS)
 
 plt.figure()
@@ -162,3 +157,11 @@ plt.ylabel('Loss Value')
 plt.ylim([0, 1])
 plt.legend()
 plt.show()
+
+model.evaluate(test_dataset)
+
+# %load_ext tensorboard
+
+# %tensorboard --logdir logs
+
+show_predictions(test_dataset, 5)

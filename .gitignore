@@ -1,0 +1,26 @@
+# Ignore the data and images folders
+data/
+images/
+
+# Ignore the myenv folder (virtual environment)
+myenv/
+
+# Ignore the .vscode folder
+.vscode/
+
+logs/
+
+# Ignore all PDF files
+*.pdf
+
+# Ignore all .ini files (including desktop.ini)
+*.ini
+
+*.ipynb
+
+# Ignore the desktop.ini file
+desktop.ini
+
+# Keep .ipynb and .py files
+#!*.ipynb
+!*.py

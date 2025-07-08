@@ -55,10 +55,46 @@ train_dataset = train.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
 train_dataset = train_dataset.prefetch(buffer_size=tf_autotune)
 test_dataset  = val.batch(BATCH_SIZE)
 
+tf.keras.backend.clear_session()
+
 # set up the model architecture
-model = tf.keras.models.Sequential([
-    Flatten(input_shape=[256, 256, 1]),
-    Dense(64, activation='relu'),
-    Dense(256*256*2, activation='softmax'),
-    Reshape((256, 256, 2))
-])
+
+layers = [
+    Conv2D(input_shape=[256, 256, 1],
+           filters=100,
+           kernel_size=FIXME,
+           strides=FIXME,
+           padding="same",
+           activation=tf.nn.relu,
+           name="Conv1"),
+    MaxPool2D(pool_size=2, strides=2, padding="same"),
+    Conv2D(filters=200,
+           kernel_size=FIXME,
+           strides=FIXME,
+           padding="same",
+           activation=tf.nn.relu),
+    MaxPool2D(pool_size=2, strides=2, padding="same"),
+    Conv2D(filters=300,
+           kernel_size=FIXME,
+           strides=FIXME,
+           padding="same",
+           activation=tf.nn.relu),
+    Conv2D(filters=300,
+           kernel_size=FIXME,
+           strides=FIXME,
+           padding="same",
+           activation=tf.nn.relu),
+    Conv2D(filters=2,
+           kernel_size=FIXME,
+           strides=FIXME,
+           padding="same",
+           activation=tf.nn.relu),
+    Conv2DTranspose(filters=2, kernel_size=31, strides=16, padding="same")
+]
+
+model = tf.keras.models.Sequential(layers)
+
+model.compile(
+    optimizer='adam',
+    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    metrics=['accuracy'])

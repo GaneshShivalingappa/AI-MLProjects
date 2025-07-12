@@ -98,3 +98,9 @@ model.compile(
     optimizer='adam',
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
     metrics=['accuracy'])
+
+# print out the summary of the model
+model.summary()
+
+# plot the model including the sizes of the model
+# tf.keras.utils.plot_model(model, show_shapes=True)

@@ -104,3 +104,47 @@ model.summary()
 
 # plot the model including the sizes of the model
 # tf.keras.utils.plot_model(model, show_shapes=True)
+
+# helper function to display an image, it's label and the prediction
+def display(display_list):
+    plt.figure(figsize=(10, 10))
+    title = ['Input Image', 'Label', 'Predicted Label']
+
+    for i in range(len(display_list)):
+        display_resized = tf.reshape(display_list[i], [256, 256])
+        plt.subplot(1, len(display_list), i+1)
+        plt.title(title[i])
+        plt.imshow(display_resized)
+        plt.axis('off')
+    plt.show()
+
+# display an image and label from the training set
+for image, label in train.take(2):
+    sample_image, sample_label = image, label
+    display([sample_image, sample_label])
+
+# display an image and label from the test set
+for image, label in val.take(2):
+    sample_image, sample_label = image, label
+    display([sample_image, sample_label])
+
+tf.keras.backend.clear_session()
+
+# function to take a prediction from the model and output an image for display
+def create_mask(pred_mask):
+    pred_mask = tf.argmax(pred_mask, axis=-1)
+    pred_mask = pred_mask[..., tf.newaxis]
+    return pred_mask[0]
+
+# helper function to show the image, the label and the prediction
+def show_predictions(dataset=None, num=1):
+    if dataset:
+        for image, label in dataset.take(num):
+            pred_mask = model.predict(image)
+            display([image[0], label[0], create_mask(pred_mask)])
+    else:
+        prediction = create_mask(model.predict(sample_image[tf.newaxis, ...]))
+        display([sample_image, sample_label, prediction])
+
+# show a predection, as an example
+show_predictions(test_dataset)

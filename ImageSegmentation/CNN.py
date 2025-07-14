@@ -148,3 +148,17 @@ def show_predictions(dataset=None, num=1):
 
 # show a predection, as an example
 show_predictions(test_dataset)
+
+def dice_coef(y_true, y_pred, smooth=1):
+    indices = K.argmax(y_pred, 3)
+    indices = K.reshape(indices, [-1, 256, 256, 1])
+
+    true_cast = y_true
+    indices_cast = K.cast(indices, dtype='float32')
+
+    axis = [1, 2, 3]
+    intersection = K.sum(true_cast * indices_cast, axis=axis)
+    union = K.sum(true_cast, axis=axis) + K.sum(indices_cast, axis=axis)
+    dice = K.mean((2. * intersection + smooth)/(union + smooth), axis=0)
+
+    return dice

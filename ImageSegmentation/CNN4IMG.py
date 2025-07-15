@@ -149,6 +149,12 @@ def show_predictions(dataset=None, num=1):
 # show a predection, as an example
 show_predictions(test_dataset)
 
+# define a callback that shows image predictions on the test set
+class DisplayCallback(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        show_predictions()
+        print ('\nSample Prediction after epoch {}\n'.format(epoch+1))
+
 def dice_coef(y_true, y_pred, smooth=1):
     indices = K.argmax(y_pred, 3)
     indices = K.reshape(indices, [-1, 256, 256, 1])

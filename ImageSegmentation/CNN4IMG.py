@@ -168,3 +168,18 @@ def dice_coef(y_true, y_pred, smooth=1):
     dice = K.mean((2. * intersection + smooth)/(union + smooth), axis=0)
 
     return dice
+
+# Initialize new directories for new task
+logdir = os.path.join("logs", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+tensorboard_callback = tf.keras.callbacks.TensorBoard(logdir, histogram_freq=1)
+
+# setup and run the model
+EPOCHS = 20
+STEPS_PER_EPOCH = len(list(parsed_training_dataset))
+VALIDATION_STEPS = 26
+
+model_history = model.fit(train_dataset, epochs=EPOCHS,
+                          steps_per_epoch=STEPS_PER_EPOCH,
+                          validation_steps=VALIDATION_STEPS,
+                          validation_data=test_dataset,
+                          callbacks=[DisplayCallback(), tensorboard_callback])

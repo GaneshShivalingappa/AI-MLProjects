@@ -103,7 +103,7 @@ model.compile(
 model.summary()
 
 # plot the model including the sizes of the model
-# tf.keras.utils.plot_model(model, show_shapes=True)
+tf.keras.utils.plot_model(model, show_shapes=True)
 
 # helper function to display an image, it's label and the prediction
 def display(display_list):
@@ -183,3 +183,9 @@ model_history = model.fit(train_dataset, epochs=EPOCHS,
                           validation_steps=VALIDATION_STEPS,
                           validation_data=test_dataset,
                           callbacks=[DisplayCallback(), tensorboard_callback])
+
+# output model statistics
+loss = model_history.history['loss']
+val_loss = model_history.history['val_loss']
+accuracy = model_history.history['accuracy']
+val_accuracy = model_history.history['val_accuracy']

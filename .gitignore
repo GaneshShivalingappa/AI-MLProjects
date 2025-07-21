@@ -4,6 +4,7 @@ images/
 
 # Ignore the myenv folder (virtual environment)
 myenv/
+support-files/
 
 # Ignore the .vscode folder
 .vscode/
@@ -16,7 +17,6 @@ logs/
 # Ignore all .ini files (including desktop.ini)
 *.ini
 
-*.ipynb
 
 # Ignore the desktop.ini file
 desktop.ini

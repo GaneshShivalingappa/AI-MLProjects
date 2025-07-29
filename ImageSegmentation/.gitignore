@@ -9,8 +9,9 @@ support-files/
 # Ignore the .vscode folder
 .vscode/
 
-# Ignore all PDF files
+# Ignore all PDF and png files
 *.pdf
+*.png
 
 # Ignore all .ini files (including desktop.ini)
 *.ini

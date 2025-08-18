@@ -1,3 +1,6 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 0 = all logs, 1 = filter INFO, 2 = filter INFO+WARNING, 3 = only ERROR
+
 #Imports
 import tensorflow as tf
 from tensorflow import keras
@@ -6,10 +9,7 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-import os
 from datetime import datetime
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress TensorFlow warnings
 
 # Download and extract the dataset
 zip_path = tf.keras.utils.get_file(
@@ -25,5 +25,10 @@ csv_path = os.path.join(
 
 df = pd.read_csv(csv_path)
 
-# Display the first few rows of the dataframe
-print(df.head())
+df = df[5::6]
+
+df.index = pd.to_datetime(df['Date Time'], format='%d.%m.%Y %H:%M:%S')
+
+temp = df['T (degC)']
+
+temp.plot()

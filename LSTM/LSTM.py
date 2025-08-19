@@ -32,3 +32,17 @@ df.index = pd.to_datetime(df['Date Time'], format='%d.%m.%Y %H:%M:%S')
 temp = df['T (degC)']
 
 temp.plot()
+
+def data_x_y(df, size = 5):
+    df_as_np = df.to_numpy()
+    x, y = [], []
+    for i in range(len(df_as_np) - size):
+       row = [[a] for a in df_as_np[i:i+size]]
+       x.append(row)
+       label = df_as_np[i + size]
+       y.append(label)
+    return np.array(x), np.array(y)
+
+WindowSize = 5
+X, y = data_x_y(temp, WindowSize)
+print((X.shape, y.shape))

@@ -45,4 +45,19 @@ def data_x_y(df, size = 5):
 
 WindowSize = 5
 X, y = data_x_y(temp, WindowSize)
-print((X.shape, y.shape))
+
+X_train, y_train = X[:60000], y[:60000]
+X_val, y_val = X[60000:65000], y[60000:65000]
+X_test, y_test = X[65000:], y[65000:]
+
+print(f"X_train shape: {X_train.shape}, y_train shape: {y_train.shape}")
+print(f"X_val shape: {X_val.shape}, y_val shape: {y_val.shape}")
+print(f"X_test shape: {X_test.shape}, y_test shape: {y_test.shape}")
+
+model = keras.models.Sequential()
+model.add(keras.layers.Input(shape=(WindowSize, 1)))
+model.add(keras.layers.LSTM(64))
+model.add(keras.layers.Dense(8, activation='relu'))
+model.add(keras.layers.Dense(1, activation='linear'))
+
+model.summary()

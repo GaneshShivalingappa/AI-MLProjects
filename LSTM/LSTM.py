@@ -61,3 +61,9 @@ model.add(keras.layers.Dense(8, activation='relu'))
 model.add(keras.layers.Dense(1, activation='linear'))
 
 model.summary()
+
+checkpoint = keras.callbacks.ModelCheckpoint("bestModel/best_model.keras", save_best_only=True)
+
+model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+
+model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=10, callbacks=[checkpoint])

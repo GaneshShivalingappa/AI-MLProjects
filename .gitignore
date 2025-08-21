@@ -10,6 +10,7 @@ support-files/
 .vscode/
 
 logs/
+bestModel/
 
 # Ignore all PDF files
 *.pdf

@@ -64,6 +64,6 @@ model.summary()
 
 checkpoint = keras.callbacks.ModelCheckpoint("bestModel/best_model.keras", save_best_only=True)
 
-model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0001), loss= keras.losses.MeanSquaredError(), metrics=[keras.metrics.RootMeanSquaredError()])
 
 model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=10, callbacks=[checkpoint])

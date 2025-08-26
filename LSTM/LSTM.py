@@ -31,7 +31,7 @@ df.index = pd.to_datetime(df['Date Time'], format='%d.%m.%Y %H:%M:%S')
 
 temp = df['T (degC)']
 
-temp.plot()
+# temp.plot()
 
 def data_x_y(df, size = 5):
     df_as_np = df.to_numpy()
@@ -66,4 +66,17 @@ checkpoint = keras.callbacks.ModelCheckpoint("bestModel/best_model.keras", save_
 
 model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0001), loss= keras.losses.MeanSquaredError(), metrics=[keras.metrics.RootMeanSquaredError()])
 
-model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=10, callbacks=[checkpoint])
+# model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=10, callbacks=[checkpoint])
+
+model_1 = keras.models.load_model("bestModel/best_model.keras")
+
+prediction = model_1.predict(X_train).flatten()
+
+train_results = pd.DataFrame(data={'Train Predicted': prediction, 'Train Actual': y_train})
+
+print(train_results)
+
+plt.plot(train_results['Train Predicted'], label='Train Predicted')
+plt.plot(train_results['Train Actual'], label='Train Actual')
+plt.legend()
+plt.show()

@@ -80,3 +80,15 @@ plt.plot(train_results['Train Predicted'], label='Train Predicted')
 plt.plot(train_results['Train Actual'], label='Train Actual')
 plt.legend()
 plt.show()
+
+
+# Part 2
+
+from sklearn.metrics import mean_squared_error as mse
+
+def plot_preiction1(model, X, y, start=0, end=100):
+    prediction = model.predict(X).flatten()
+    df = pd.DataFrame(data={'Predicted': prediction, 'Actual': y})
+    plt.plot(df['Predicted'][start:end], label='Predicted')
+    plt.plot(df['Actual'][start:end], label='Actual')
+    return df, mse(y, prediction)

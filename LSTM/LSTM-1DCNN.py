@@ -54,43 +54,12 @@ print(f"X_train shape: {X_train.shape}, y_train shape: {y_train.shape}")
 print(f"X_val shape: {X_val.shape}, y_val shape: {y_val.shape}")
 print(f"X_test shape: {X_test.shape}, y_test shape: {y_test.shape}")
 
-model = keras.models.Sequential()
-model.add(keras.layers.Input(shape=(WindowSize, 1)))
-model.add(keras.layers.LSTM(64))
-model.add(keras.layers.Dense(8, activation='relu'))
-model.add(keras.layers.Dense(1, activation='linear'))
-
-model.summary()
-
-checkpoint = keras.callbacks.ModelCheckpoint("bestModel/best_model.keras", save_best_only=True)
-
-model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0001), loss= keras.losses.MeanSquaredError(), metrics=[keras.metrics.RootMeanSquaredError()])
-
-# model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=10, callbacks=[checkpoint])
-
-model_1 = keras.models.load_model("bestModel/best_model.keras")
-
-prediction = model_1.predict(X_train).flatten()
-
-train_results = pd.DataFrame(data={'Train Predicted': prediction, 'Train Actual': y_train})
-
-print(train_results)
-
-plt.plot(train_results['Train Predicted'], label='Train Predicted')
-plt.plot(train_results['Train Actual'], label='Train Actual')
-plt.legend()
-plt.show()
+model2 = tf.keras.Sequential()
+model2.add(keras.layers.Input(shape=(WindowSize, 1)))
+model2.add(keras.layers.Conv1D(filters=64, kernel_size=2))
+model2.add(keras.layers.Flatten())
+model2.add(keras.layers.Dense(8, activation='relu'))
+model2.add(keras.layers.Dense(1, activation='linear'))
+model2.summary()
 
 
-# Part 2
-
-from sklearn.metrics import mean_squared_error as mse
-
-def plot_preiction1(model, X, y, start=0, end=100):
-    prediction = model.predict(X).flatten()
-    df = pd.DataFrame(data={'Predicted': prediction, 'Actual': y})
-    plt.plot(df['Predicted'][start:end], label='Predicted')
-    plt.plot(df['Actual'][start:end], label='Actual')
-    return df, mse(y, prediction)
-
-plot_preiction1(model_1, X_test, y_test)

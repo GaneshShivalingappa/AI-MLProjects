@@ -62,4 +62,7 @@ model2.add(keras.layers.Dense(8, activation='relu'))
 model2.add(keras.layers.Dense(1, activation='linear'))
 model2.summary()
 
+cp1 = keras.callbacks.ModelCheckpoint("bestModel/best_model_1DCNN.keras", save_best_only=True)
+model2.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0001), loss= keras.losses.MeanSquaredError(), metrics=[keras.metrics.RootMeanSquaredError()])
 
+model2.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val), callbacks=[cp1])

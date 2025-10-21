@@ -1,0 +1,6 @@
+# Count all normal notebooks in stats
+*.ipynb linguist-detectable=true
+
+# Ignore big  notebooks
+ImageSegmentation/*.ipynb linguist-detectable=false
+

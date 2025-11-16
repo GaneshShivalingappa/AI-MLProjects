@@ -1,68 +1,40 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 0 = all logs, 1 = filter INFO, 2 = filter INFO+WARNING, 3 = only ERROR
 
-#Imports
-import tensorflow as tf
-from tensorflow import keras
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
-from datetime import datetime
+# Import project modules
+from src.data_processing import load_and_prepare_data, create_sequences
+from src.model_builder import build_model
+from src.trainer import train_model
 
-# Download and extract the dataset
-zip_path = tf.keras.utils.get_file(
-    origin='https://storage.googleapis.com/tensorflow/tf-keras-datasets/jena_climate_2009_2016.csv.zip',
-    fname='jena_climate_2009_2016.csv.zip',
-    extract=True)
+def main():
+    """Main function to run the ML pipeline."""
+    # --- 1. Configuration ---
+    WINDOW_SIZE = 5
+    TRAIN_SPLIT = 60000
+    VAL_SPLIT = 65000
+    EPOCHS = 10
 
-csv_path = os.path.join(
-    os.path.dirname(zip_path), 
-    "jena_climate_2009_2016_extracted", 
-    "jena_climate_2009_2016.csv"
-)
+    # --- 2. Data Loading and Preprocessing ---
+    temp_series = load_and_prepare_data()
+    X, y = create_sequences(temp_series, WINDOW_SIZE)
 
-df = pd.read_csv(csv_path)
+    X_train, y_train = X[:TRAIN_SPLIT], y[:TRAIN_SPLIT]
+    X_val, y_val = X[TRAIN_SPLIT:VAL_SPLIT], y[TRAIN_SPLIT:VAL_SPLIT]
+    X_test, y_test = X[VAL_SPLIT:], y[VAL_SPLIT:]
 
-df = df[5::6]
+    print(f"X_train shape: {X_train.shape}, y_train shape: {y_train.shape}")
+    print(f"X_val shape: {X_val.shape}, y_val shape: {y_val.shape}")
+    print(f"X_test shape: {X_test.shape}, y_test shape: {y_test.shape}")
 
-df.index = pd.to_datetime(df['Date Time'], format='%d.%m.%Y %H:%M:%S')
+    # --- 3. Model Building and Training ---
+    # The input shape for the model is (window_size, num_features)
+    model = build_model(input_shape=(WINDOW_SIZE, 1))
+    
+    history = train_model(model, X_train, y_train, X_val, y_val, epochs=EPOCHS)
+    
+    print("\nPipeline finished successfully.")
+    # You can now use the 'history' object or load the best model for evaluation.
 
-temp = df['T (degC)']
 
-# temp.plot()
-
-def data_x_y(df, size = 5):
-    df_as_np = df.to_numpy()
-    x, y = [], []
-    for i in range(len(df_as_np) - size):
-       row = [[a] for a in df_as_np[i:i+size]]
-       x.append(row)
-       label = df_as_np[i + size]
-       y.append(label)
-    return np.array(x), np.array(y)
-
-WindowSize = 5
-X, y = data_x_y(temp, WindowSize)
-
-X_train, y_train = X[:60000], y[:60000]
-X_val, y_val = X[60000:65000], y[60000:65000]
-X_test, y_test = X[65000:], y[65000:]
-
-print(f"X_train shape: {X_train.shape}, y_train shape: {y_train.shape}")
-print(f"X_val shape: {X_val.shape}, y_val shape: {y_val.shape}")
-print(f"X_test shape: {X_test.shape}, y_test shape: {y_test.shape}")
-
-model2 = tf.keras.Sequential()
-model2.add(keras.layers.Input(shape=(WindowSize, 1)))
-model2.add(keras.layers.Conv1D(filters=64, kernel_size=2))
-model2.add(keras.layers.Flatten())
-model2.add(keras.layers.Dense(8, activation='relu'))
-model2.add(keras.layers.Dense(1, activation='linear'))
-model2.summary()
-
-cp1 = keras.callbacks.ModelCheckpoint("bestModel/best_model_1DCNN.keras", save_best_only=True)
-model2.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0001), loss= keras.losses.MeanSquaredError(), metrics=[keras.metrics.RootMeanSquaredError()])
-
-model2.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val), callbacks=[cp1])
+if __name__ == "__main__":
+    main()

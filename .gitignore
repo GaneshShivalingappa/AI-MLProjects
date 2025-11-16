@@ -4,6 +4,7 @@ images/
 
 # Ignore the myenv folder (virtual environment)
 myenv/
+aimlenv/
 support-files/
 
 # Ignore the .vscode folder

@@ -1,0 +1,22 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environments
+.env
+venv/
+env/
+
+# IDE / Editor specific folders
+.vscode/
+.idea/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Model checkpoints (optional, but good practice if they are large)
+bestModel/

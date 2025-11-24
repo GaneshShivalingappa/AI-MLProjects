@@ -60,4 +60,17 @@ def build_discriminator():
 
     return model    
 
+# --- TEST GENERATOR AND DISCRIMINATOR ---
+
+generator = build_generator()
+noise = tf.random.normal([1, NOISE_DIM])
+generated_image = generator(noise, training=False)
+print("Generated image shape:", generated_image.shape)
+
+plt.imshow(generated_image[0, :, :, 0], cmap='gray')
+plt.show()
+
+discriminator = build_discriminator()
+decision = discriminator(generated_image)
+print("Decision shape:", decision.shape)
 

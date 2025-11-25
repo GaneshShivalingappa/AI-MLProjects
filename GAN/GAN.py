@@ -56,7 +56,7 @@ def build_discriminator():
     model.add(layers.Dropout(0.3))
 
     model.add(layers.Flatten())
-    model.add(layers.Dense(1))
+    model.add(layers.Dense(1, activation='sigmoid'))
 
     return model    
 
@@ -68,9 +68,23 @@ generated_image = generator(noise, training=False)
 print("Generated image shape:", generated_image.shape)
 
 plt.imshow(generated_image[0, :, :, 0], cmap='gray')
-plt.show()
+#plt.show()
 
 discriminator = build_discriminator()
 decision = discriminator(generated_image)
-print("Decision shape:", decision.shape)
+print("Decision", decision)
 
+# loss functions
+cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+def discriminator_loss(realOutput, fakeOutput):
+    real_loss = cross_entropy(tf.ones_like(realOutput), realOutput)
+    fake_loss = cross_entropy(tf.zeros_like(fakeOutput), fakeOutput)
+    total_loss = real_loss + fake_loss
+    return total_loss
+
+def generator_loss(fake_output):
+    return cross_entropy(tf.ones_like(fake_output), fake_output)
+
+generator_optimizer = tf.keras.optimizers.Adam(1e-4)
+discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)

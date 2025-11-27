@@ -89,6 +89,15 @@ def generator_loss(fake_output):
 generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
+checkpoint_dir = './training_checkpoints'
+checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
+checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
+                                 discriminator_optimizer=discriminator_optimizer,
+                                 generator=generator,
+                                 discriminator=discriminator)
+
+
+
 # --- TRAINING ---
 @tf.function
 def train_step(images):
@@ -107,3 +116,24 @@ def train_step(images):
 
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
+
+
+#--- TRAINING LOOP ---
+def train(dataset, epochs):
+    for epoch in range(epochs):
+        start = time.time()
+
+        for image_batch in dataset:
+            train_step(image_batch)
+
+        if (epoch + 1) % 10 == 0:
+            checkpoint.save(file_prefix=checkpoint_prefix)
+
+        print(f'Time for epoch {epoch + 1} is {time.time() - start} sec')
+
+    display.clear_output(wait=True)
+    generate_and_save_images(generator, epochs, seed)
+
+
+
+

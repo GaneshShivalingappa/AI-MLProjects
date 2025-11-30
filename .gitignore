@@ -2,23 +2,22 @@
 data/
 images/
 
-# Ignore the myenv folder (virtual environment)
+# Ignore environment folders 
 myenv/
 aimlenv/
 support-files/
+training_checkpoints/
+logs/
+bestModel/
 
 # Ignore the .vscode folder
 .vscode/
-
-logs/
-bestModel/
 
 # Ignore all PDF files
 *.pdf
 
 # Ignore all .ini files (including desktop.ini)
 *.ini
-
 
 # Ignore the desktop.ini file
 desktop.ini

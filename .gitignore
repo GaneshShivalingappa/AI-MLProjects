@@ -15,6 +15,7 @@ bestModel/
 
 # Ignore all PDF files
 *.pdf
+*.png
 
 # Ignore all .ini files (including desktop.ini)
 *.ini

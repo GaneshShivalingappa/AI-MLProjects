@@ -3,6 +3,7 @@ os.environ.setdefault('TF_ENABLE_ONEDNN_OPTS', '0')
 os.environ.setdefault('TF_CPP_MIN_LOG_LEVEL', '2')
 import tensorflow as tf
 from tensorflow.keras import layers
+from IPython import display
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -68,7 +69,7 @@ generated_image = generator(noise, training=False)
 print("Generated image shape:", generated_image.shape)
 
 plt.imshow(generated_image[0, :, :, 0], cmap='gray')
-#plt.show()
+plt.show()
 
 discriminator = build_discriminator()
 decision = discriminator(generated_image)
@@ -89,14 +90,25 @@ def generator_loss(fake_output):
 generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
-checkpoint_dir = './training_checkpoints'
+os.makedirs('./GAN/training_checkpoints', exist_ok=True)
+checkpoint_dir = './GAN/training_checkpoints'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator_optimizer=discriminator_optimizer,
                                  generator=generator,
                                  discriminator=discriminator)
 
+# Restore from the latest checkpoint if one exists
+latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
+if latest_checkpoint:
+    checkpoint.restore(latest_checkpoint)
+    print(f"Checkpoint restored from {latest_checkpoint}")
+else:
+    print("Initializing from scratch.")
 
+# We will reuse this seed overtime to visualize progress
+NUM_EXAMPLES_TO_GENERATE = 16
+seed = tf.random.normal([NUM_EXAMPLES_TO_GENERATE, NOISE_DIM])
 
 # --- TRAINING ---
 @tf.function
@@ -120,19 +132,23 @@ def train_step(images):
 
 #--- TRAINING LOOP ---
 def train(dataset, epochs):
+    # Generate and save images before training starts
+    generate_and_save_images(generator, 0, seed)
+
     for epoch in range(epochs):
         start = time.time()
 
         for image_batch in dataset:
             train_step(image_batch)
 
-        if (epoch + 1) % 10 == 0:
+        # Produce images for the GIF as we go
+        display.clear_output(wait=True)
+        generate_and_save_images(generator, epoch + 1, seed)
+
+        if (epoch + 1) % 15 == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
 
         print(f'Time for epoch {epoch + 1} is {time.time() - start} sec')
-
-    display.clear_output(wait=True)
-    generate_and_save_images(generator, epochs, seed)
 
 def generate_and_save_images(model, epoch, test_input):
     predictions = model(test_input, training=False)
@@ -146,8 +162,7 @@ def generate_and_save_images(model, epoch, test_input):
 
     plt.savefig('image_at_epoch_{:04d}.png'.format(epoch))
     plt.show()
+    plt.close(fig)
 
 # --- START TRAINING ---
 train(train_dataset, EPOCHS)
-
-

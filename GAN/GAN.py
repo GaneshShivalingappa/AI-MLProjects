@@ -93,11 +93,13 @@ discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 os.makedirs('./GAN/training_checkpoints', exist_ok=True)
 checkpoint_dir = './GAN/training_checkpoints'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
+
+epoch_var = tf.Variable(0, dtype=tf.int64)
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator_optimizer=discriminator_optimizer,
                                  generator=generator,
-                                 discriminator=discriminator)
-
+                                 discriminator=discriminator,
+                                 epoch=epoch_var)
 # Restore from the latest checkpoint if one exists
 latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
 if latest_checkpoint:
@@ -133,24 +135,28 @@ def train_step(images):
 #--- TRAINING LOOP ---
 def train(dataset, epochs):
     # Generate and save images before training starts
-    generate_and_save_images(generator, 0, seed)
+    if epoch_var.numpy() == 0:
+        generate_and_save_images(generator, 0, seed)
 
-    for epoch in range(epochs):
+    for epoch in range(epoch_var.numpy(), epochs):
         start = time.time()
 
         for image_batch in dataset:
             train_step(image_batch)
 
         # Produce images for the GIF as we go
-        display.clear_output(wait=True)
+        # display.clear_output(wait=True) # This is for Jupyter notebooks, can be commented out
         generate_and_save_images(generator, epoch + 1, seed)
-
+        epoch_var.assign_add(1)
         if (epoch + 1) % 15 == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
 
         print(f'Time for epoch {epoch + 1} is {time.time() - start} sec')
 
 def generate_and_save_images(model, epoch, test_input):
+    # Create image directory if it doesn't exist
+    os.makedirs('./GAN/images', exist_ok=True)
+
     predictions = model(test_input, training=False)
 
     fig = plt.figure(figsize=(4,4))
@@ -160,7 +166,7 @@ def generate_and_save_images(model, epoch, test_input):
         plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
         plt.axis('off')
 
-    plt.savefig('image_at_epoch_{:04d}.png'.format(epoch))
+    plt.savefig('./GAN/images/image_at_epoch_{:04d}.png'.format(epoch))
     plt.show()
     plt.close(fig)
 

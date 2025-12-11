@@ -2,5 +2,5 @@
 *.ipynb linguist-detectable=true
 
 # Ignore big  notebooks
-ImageSegmentation/*.ipynb linguist-detectable=false
+1-ImageSegmentation/*.ipynb linguist-detectable=false
 

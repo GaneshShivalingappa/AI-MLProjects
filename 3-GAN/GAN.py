@@ -23,7 +23,8 @@ train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(60000).
 # --- BUILD GENERATOR ---
 def build_generator():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(7 * 7 * 256, use_bias=False, input_shape=(NOISE_DIM,)))
+    model.add(layers.Input(shape=(NOISE_DIM,)))
+    model.add(layers.Dense(7 * 7 * 256, use_bias=False))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
@@ -48,7 +49,8 @@ def build_generator():
 # --- BUILD DISCRIMINATOR ---
 def build_discriminator():
     model = tf.keras.Sequential()
-    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same', input_shape=[28, 28, 1]))
+    model.add(layers.Input(shape=(28, 28, 1)))
+    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same'))
     model.add(layers.LeakyReLU())
     model.add(layers.Dropout(0.3))
 
@@ -57,7 +59,7 @@ def build_discriminator():
     model.add(layers.Dropout(0.3))
 
     model.add(layers.Flatten())
-    model.add(layers.Dense(1, activation='sigmoid'))
+    model.add(layers.Dense(1))
 
     return model    
 
@@ -69,7 +71,7 @@ generated_image = generator(noise, training=False)
 print("Generated image shape:", generated_image.shape)
 
 plt.imshow(generated_image[0, :, :, 0], cmap='gray')
-plt.show()
+# plt.show()
 
 discriminator = build_discriminator()
 decision = discriminator(generated_image)
@@ -92,7 +94,6 @@ discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
 os.makedirs('./GAN/training_checkpoints', exist_ok=True)
 checkpoint_dir = './GAN/training_checkpoints'
-checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
 epoch_var = tf.Variable(0, dtype=tf.int64)
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
@@ -100,11 +101,12 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  generator=generator,
                                  discriminator=discriminator,
                                  epoch=epoch_var)
+manager = tf.train.CheckpointManager(checkpoint, checkpoint_dir, max_to_keep=3)
+
 # Restore from the latest checkpoint if one exists
-latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
-if latest_checkpoint:
-    checkpoint.restore(latest_checkpoint)
-    print(f"Checkpoint restored from {latest_checkpoint}")
+if manager.latest_checkpoint:
+    checkpoint.restore(manager.latest_checkpoint)
+    print(f"Checkpoint restored from {manager.latest_checkpoint}")
 else:
     print("Initializing from scratch.")
 
@@ -148,8 +150,8 @@ def train(dataset, epochs):
         # display.clear_output(wait=True) # This is for Jupyter notebooks, can be commented out
         generate_and_save_images(generator, epoch + 1, seed)
         epoch_var.assign_add(1)
-        if (epoch + 1) % 15 == 0:
-            checkpoint.save(file_prefix=checkpoint_prefix)
+        if (epoch + 1) % 1 == 0:
+            manager.save()
 
         print(f'Time for epoch {epoch + 1} is {time.time() - start} sec')
 
@@ -167,7 +169,7 @@ def generate_and_save_images(model, epoch, test_input):
         plt.axis('off')
 
     plt.savefig('./GAN/images/image_at_epoch_{:04d}.png'.format(epoch))
-    plt.show()
+    # plt.show()
     plt.close(fig)
 
 # --- START TRAINING ---

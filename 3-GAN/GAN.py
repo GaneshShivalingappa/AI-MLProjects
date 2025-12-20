@@ -1,6 +1,8 @@
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ.setdefault('TF_ENABLE_ONEDNN_OPTS', '0')
 os.environ.setdefault('TF_CPP_MIN_LOG_LEVEL', '2')
+import sys
 import tensorflow as tf
 from tensorflow.keras import layers
 from IPython import display
@@ -96,11 +98,11 @@ os.makedirs('./GAN/training_checkpoints', exist_ok=True)
 checkpoint_dir = './GAN/training_checkpoints'
 
 epoch_var = tf.Variable(0, dtype=tf.int64)
-checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
-                                 discriminator_optimizer=discriminator_optimizer,
-                                 generator=generator,
-                                 discriminator=discriminator,
-                                 epoch=epoch_var)
+checkpoint = tf.train.Checkpoint(
+    generator=generator,
+    discriminator=discriminator,
+    epoch=epoch_var
+)
 manager = tf.train.CheckpointManager(checkpoint, checkpoint_dir, max_to_keep=3)
 
 # Restore from the latest checkpoint if one exists

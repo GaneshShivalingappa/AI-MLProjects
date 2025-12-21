@@ -176,3 +176,7 @@ def generate_and_save_images(model, epoch, test_input):
 
 # --- START TRAINING ---
 train(train_dataset, EPOCHS)
+
+# Save the final generator model for inference
+generator.save('./GAN/generator_final.keras')
+print("Generator model saved to ./GAN/generator_final.keras")

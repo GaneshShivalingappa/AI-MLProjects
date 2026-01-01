@@ -1,5 +1,6 @@
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ.setdefault('TF_ENABLE_ONEDNN_OPTS', '0')
 os.environ.setdefault('TF_CPP_MIN_LOG_LEVEL', '2')
 import sys
@@ -94,8 +95,8 @@ def generator_loss(fake_output):
 generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
-os.makedirs('./GAN/training_checkpoints', exist_ok=True)
-checkpoint_dir = './GAN/training_checkpoints'
+os.makedirs('.3-GAN/training_checkpoints', exist_ok=True)
+checkpoint_dir = './3-GAN/training_checkpoints'
 
 epoch_var = tf.Variable(0, dtype=tf.int64)
 checkpoint = tf.train.Checkpoint(
@@ -120,6 +121,8 @@ seed = tf.random.normal([NUM_EXAMPLES_TO_GENERATE, NOISE_DIM])
 @tf.function
 def train_step(images):
     noise = tf.random.normal([BATCH_SIZE, NOISE_DIM])
+    current_batch_size = tf.shape(images)[0]
+    noise = tf.random.normal([current_batch_size, NOISE_DIM])
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
         generated_images = generator(noise, training=True)

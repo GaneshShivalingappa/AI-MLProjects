@@ -26,3 +26,7 @@ desktop.ini
 # Keep .ipynb and .py files
 #!*.ipynb
 !*.py
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
